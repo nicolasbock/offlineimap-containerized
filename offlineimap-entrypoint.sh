@@ -2,4 +2,4 @@
 
 : ${TIMEOUT:=30}
 
-timeout ${TIMEOUT} ionice --class idle offlineimap "$@"
+timeout ${TIMEOUT} nice -n 19 ionice --class idle offlineimap "$@"
