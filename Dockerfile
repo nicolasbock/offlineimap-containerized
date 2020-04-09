@@ -8,5 +8,6 @@ RUN pip install offlineimap
 WORKDIR /root
 ARG TIMEOUT
 ENV TIMEOUT ${TIMEOUT:-300}
-ENTRYPOINT ["timeout", "300", "ionice", "--class", "idle", "offlineimap"]
+COPY offlineimap-entrypoint.sh /root/offlineimap-entrypoint.sh
+ENTRYPOINT ["/root/offlineimap-entrypoint.sh"]
 CMD ["-o"]
