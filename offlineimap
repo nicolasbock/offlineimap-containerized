@@ -2,12 +2,14 @@
 
 set -x
 
+: ${TIMEOUT:=300}
 home=$(readlink --canonicalize ~)
 maildir=Mail
 
 docker run \
   --rm \
   --interactive --tty \
+  --env TIMEOUT=${TIMEOUT} \
   --volume ${home}/.offlineimap:/root/.offlineimap:rw \
   --volume ${home}/.offlineimaprc:/root/.offlineimaprc:ro \
   --volume ${home}/.offlineimap.py:/root/.offlineimap.py:ro \
