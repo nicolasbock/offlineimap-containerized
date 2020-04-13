@@ -6,6 +6,10 @@ set -x
 home=$(readlink --canonicalize ~)
 maildir=Mail
 
+if [[ ! -d ~/.offlineimap ]]; then
+  mkdir ~/.offlineimap
+fi
+
 docker run \
   --rm \
   --interactive --tty \
