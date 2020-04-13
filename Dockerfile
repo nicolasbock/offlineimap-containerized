@@ -2,7 +2,7 @@ FROM ubuntu:xenial
 
 # Install software
 RUN apt-get update
-RUN apt-get --yes install python-pip
+RUN apt-get --yes install --no-install-recommends python-pip
 RUN pip install --upgrade pip
 RUN pip install setuptools
 RUN pip install six
