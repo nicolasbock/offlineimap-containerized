@@ -10,8 +10,9 @@ docker run \
   --rm \
   --interactive --tty \
   --env TIMEOUT=${TIMEOUT} \
-  --volume ${home}/.offlineimap:/root/.offlineimap:rw \
-  --volume ${home}/.offlineimaprc:/root/.offlineimaprc:ro \
-  --volume ${home}/.offlineimap.py:/root/.offlineimap.py:ro \
-  --volume ${home}/${maildir}:/root/${maildir}:rw \
+  --user $(id -u):$(id -g) \
+  --volume ${home}/.offlineimap:/var/tmp/.offlineimap:rw \
+  --volume ${home}/.offlineimaprc:/var/tmp/.offlineimaprc:ro \
+  --volume ${home}/.offlineimap.py:/var/tmp/.offlineimap.py:ro \
+  --volume ${home}/${maildir}:/var/tmp/${maildir}:rw \
   offlineimap "$@"

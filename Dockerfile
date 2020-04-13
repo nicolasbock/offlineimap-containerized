@@ -10,6 +10,7 @@ RUN pip install rfc6555
 RUN pip install offlineimap
 
 # Set up environment
+ENV HOME /var/tmp
 WORKDIR /var/tmp
 ARG TIMEOUT
 ENV TIMEOUT ${TIMEOUT:-300}
