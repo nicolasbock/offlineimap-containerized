@@ -2,6 +2,7 @@ FROM ubuntu:xenial
 RUN apt-get update
 RUN apt-get --yes install python-pip
 RUN pip install --upgrade pip
+RUN pip install setuptools
 RUN pip install six
 RUN pip install rfc6555
 RUN pip install offlineimap
