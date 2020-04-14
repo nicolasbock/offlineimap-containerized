@@ -13,7 +13,7 @@ RUN pip install offlineimap
 ENV HOME /var/tmp
 WORKDIR /var/tmp
 ARG TIMEOUT
-ENV TIMEOUT ${TIMEOUT:-300}
+ENV TIMEOUT ${TIMEOUT:-0}
 
 # Create entry point
 COPY offlineimap-entrypoint.sh /usr/bin/offlineimap-entrypoint.sh

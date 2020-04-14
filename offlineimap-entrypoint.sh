@@ -1,6 +1,6 @@
 #!/bin/bash
 
-: ${TIMEOUT:=300}
+: ${TIMEOUT:=0}
 : ${UID:=0}
 : ${GID:=0}
 
