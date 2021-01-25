@@ -1,8 +1,8 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 
 # Install software
 RUN apt-get update
-RUN apt-get --yes install --no-install-recommends python-pip
+RUN apt-get --yes install --no-install-recommends python-pip python-setuptools
 RUN pip install --upgrade pip
 RUN pip install setuptools
 RUN pip install six

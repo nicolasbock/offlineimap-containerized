@@ -12,7 +12,6 @@ fi
 
 docker run \
   --rm \
-  --interactive --tty \
   --env TIMEOUT=${TIMEOUT} \
   --user $(id -u):$(id -g) \
   --volume ${home}/.offlineimap:/var/tmp/.offlineimap:rw \
