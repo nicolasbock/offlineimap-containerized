@@ -1,0 +1,22 @@
+FROM ubuntu:bionic
+
+# Install software
+RUN apt-get update
+RUN apt-get --yes install --no-install-recommends \
+    python3-pip python3-setuptools python3-wheel
+RUN pip3 install --upgrade pip
+RUN pip3 install setuptools
+RUN pip3 install six
+RUN pip3 install rfc6555
+RUN pip3 install offlineimap
+
+# Set up environment
+ENV HOME /var/tmp
+WORKDIR /var/tmp
+ARG TIMEOUT
+ENV TIMEOUT ${TIMEOUT:-0}
+
+# Create entry point
+COPY offlineimap-entrypoint.sh /usr/bin/offlineimap-entrypoint.sh
+ENTRYPOINT ["/usr/bin/offlineimap-entrypoint.sh"]
+CMD ["-o"]
