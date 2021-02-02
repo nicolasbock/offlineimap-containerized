@@ -18,5 +18,5 @@ docker run \
   --volume ${home}/.offlineimaprc:/var/tmp/.offlineimaprc:ro \
   --volume ${home}/.offlineimap.py:/var/tmp/.offlineimap.py:ro \
   --volume ${home}/${maildir}:/var/tmp/${maildir}:rw \
-  offlineimap-python3:latest \
+  offlineimap-python2:latest \
   "$@"
