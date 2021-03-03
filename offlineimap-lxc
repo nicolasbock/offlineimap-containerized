@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# Starting and preparing the LXC container takes a bit longer than the
+# comparable Docker container. This script prepares the container and
+# then stops it so that subsequent calls can simply start the existing
+# container.
+
+set -e -u -x
+
+: ${TIMEOUT:=0}
+home=$(readlink --canonicalize ~)
+maildir=Mail
+
+CONTAINER=offlineimap-python2
+
+wait_for_network() {
+  while ! lxc exec ${CONTAINER} -- ping -c 1 1.1.1.1; do
+    sleep 1
+  done
+}
+
+create_container() {
+  if [[ ! -d ~/.offlineimap ]]; then
+    mkdir ~/.offlineimap
+  fi
+
+  lxc launch ubuntu:bionic ${CONTAINER}
+
+  wait_for_network
+
+  lxc exec ${CONTAINER} -- apt-get update
+  lxc exec ${CONTAINER} -- apt-get --yes install --no-install-recommends \
+    python-pip python-setuptools python-wheel
+  lxc exec ${CONTAINER} -- pip install --upgrade pip
+  lxc exec ${CONTAINER} -- pip install setuptools
+  lxc exec ${CONTAINER} -- pip install six
+  lxc exec ${CONTAINER} -- pip install rfc6555
+  lxc exec ${CONTAINER} -- pip install offlineimap
+
+  lxc file push ./offlineimap-entrypoint.sh ${CONTAINER}/home/ubuntu/
+
+  lxc stop ${CONTAINER}
+
+  printf "uid $(id --user) 1000\ngid $(id --group) 1000" \
+    | lxc config set ${CONTAINER} raw.idmap -
+  lxc config device add ${CONTAINER} \
+    mail disk \
+    source=~/Mail \
+    path=/home/ubuntu/Mail
+  lxc config device add ${CONTAINER} \
+    offlineimap disk \
+    source=~/.offlineimap \
+    path=/home/ubuntu/.offlineimap
+  lxc config device add ${CONTAINER} \
+    offlineimaprc disk \
+    source=~/.offlineimaprc \
+    path=/home/ubuntu/.offlineimaprc
+  lxc config device add ${CONTAINER} \
+    offlineimap.py disk \
+    source=~/.offlineimap.py \
+    path=/home/ubuntu/.offlineimap.py
+}
+
+if ! lxc info ${CONTAINER} > /dev/null; then
+  create_container
+fi
+
+# Make sure we shut down the container even if an error occurs.
+trap "lxc stop offlineimap-python2" EXIT SIGHUP
+
+lxc start offlineimap-python2
+wait_for_network
+lxc exec offlineimap-python2 -- sudo --login --user ubuntu offlineimap "$@"
