@@ -76,4 +76,9 @@ if lxc info offlineimap-python2 | grep 'Status: Stopped'; then
   wait_for_network
 fi
 
-lxc exec offlineimap-python2 -- sudo --login --user ubuntu offlineimap "$@"
+systemd-cat --identifier offlineimap \
+  lxc exec offlineimap-python2 \
+  -- sudo --login --user ubuntu \
+  nice -n 19 \
+  ionice --class idle \
+  offlineimap "$@"
