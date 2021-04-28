@@ -12,6 +12,7 @@ home=$(readlink --canonicalize ~)
 maildir=Mail
 
 CONTAINER=offlineimap-python2
+: ${STOP_AT_END:=0}
 
 wait_for_network() {
   while ! lxc exec ${CONTAINER} -- ping -c 1 1.1.1.1; do
@@ -65,9 +66,14 @@ if ! lxc info ${CONTAINER} > /dev/null; then
   create_container
 fi
 
-# Make sure we shut down the container even if an error occurs.
-trap "lxc stop offlineimap-python2" EXIT SIGHUP
+if (( ${STOP_AT_END} == 1 )); then
+  # Make sure we shut down the container even if an error occurs.
+  trap "lxc stop offlineimap-python2" EXIT SIGHUP
+fi
 
-lxc start offlineimap-python2
-wait_for_network
+if lxc info offlineimap-python2 | grep 'Status: Stopped'; then
+  lxc start offlineimap-python2
+  wait_for_network
+fi
+
 lxc exec offlineimap-python2 -- sudo --login --user ubuntu offlineimap "$@"
