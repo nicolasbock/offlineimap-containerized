@@ -8,7 +8,7 @@
 set -e -u -x
 
 : ${TIMEOUT:=0}
-home=$(readlink --canonicalize ~)
+scriptdir=$(readlink --canonicalize $(dirname $0))
 maildir=Mail
 
 CONTAINER=offlineimap-python2
@@ -38,7 +38,7 @@ create_container() {
   lxc exec ${CONTAINER} -- pip install rfc6555
   lxc exec ${CONTAINER} -- pip install offlineimap
 
-  lxc file push ./offlineimap-entrypoint.sh ${CONTAINER}/home/ubuntu/
+  lxc file push ${scriptdir}/offlineimap-entrypoint.sh ${CONTAINER}/home/ubuntu/
 
   lxc stop ${CONTAINER}
 
@@ -46,8 +46,8 @@ create_container() {
     | lxc config set ${CONTAINER} raw.idmap -
   lxc config device add ${CONTAINER} \
     mail disk \
-    source=~/Mail \
-    path=/home/ubuntu/Mail
+    source=~/${maildir} \
+    path=/home/ubuntu/${maildir}
   lxc config device add ${CONTAINER} \
     offlineimap disk \
     source=~/.offlineimap \
@@ -60,6 +60,8 @@ create_container() {
     offlineimap.py disk \
     source=~/.offlineimap.py \
     path=/home/ubuntu/.offlineimap.py
+
+  lxc config device list ${CONTAINER}
 }
 
 if ! lxc info ${CONTAINER} > /dev/null; then
