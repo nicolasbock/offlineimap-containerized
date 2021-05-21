@@ -10,7 +10,12 @@ if [[ ! -d ~/.offlineimap ]]; then
   mkdir ~/.offlineimap
 fi
 
-docker run \
+if ! docker image inspect offlineimap-python2:latest > /dev/null; then
+  make image
+fi
+
+systemd-cat --identifier offlineimap \
+  docker run \
   --rm \
   --env TIMEOUT=${TIMEOUT} \
   --user $(id -u):$(id -g) \
@@ -18,4 +23,5 @@ docker run \
   --volume ${home}/.offlineimaprc:/var/tmp/.offlineimaprc:ro \
   --volume ${home}/.offlineimap.py:/var/tmp/.offlineimap.py:ro \
   --volume ${home}/${maildir}:/var/tmp/${maildir}:rw \
-  offlineimap "$@"
+  offlineimap-python2:latest \
+  "$@"
